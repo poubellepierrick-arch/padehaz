@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "Workshop": {
+      "title": "Workshop",
+      "description": "Données complètes des ateliers et configurations",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Identifiant du propriétaire créateur de l'atelier"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Nom de l'atelier ou identifiant de sauvegarde"
+        },
+        "allStates": {
+          "type": "object",
+          "description": "Données d'état de tous les groupes d'ateliers"
+        },
+        "currentGroupName": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Nom du groupe actuellement sélectionné"
+        },
+        "globalAlgoTemplates": {
+          "type": "array",
+          "description": "Modèles d'algorithmes globaux"
+        },
+        "globalProgEmbed": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "URL ou code iframe global partagé entre tous les ateliers"
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Horodatage de dernière modification"
+        }
+      },
+      "required": ["ownerId", "updatedAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Profil utilisateur",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Nom d'affichage du compte"
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Horodatage de mise à jour"
+        }
+      },
+      "required": ["displayName", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/workshops/{workshopId}": {
+      "schema": "Workshop",
+      "description": "Sauvegardes et synchronisation des ateliers par utilisateur"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Profils des utilisateurs"
+    }
+  }
+}
