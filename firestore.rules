@@ -50,7 +50,7 @@ service cloud.firestore {
              (!('currentGroupName' in data) || (data.currentGroupName is string && data.currentGroupName.size() <= 120)) &&
              (!('globalProgEmbed' in data) || (data.globalProgEmbed is string && data.globalProgEmbed.size() <= 2000)) &&
              (!('allStates' in data) || data.allStates is map) &&
-             (!('globalAlgoTemplates' in data) || (data.globalAlgoTemplates is list && data.globalAlgoTemplates.size() <= 100)) &&
+             (!('globalAlgoTemplates' in data) || (data.globalAlgoTemplates is list && data.globalAlgoTemplates.size() <= 100 && (data.globalAlgoTemplates.size() == 0 || data.globalAlgoTemplates[0] is map))) &&
              (!('dataJson' in data) || (data.dataJson is string && data.dataJson.size() <= 900000));
     }
 

@@ -65,7 +65,7 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
     return (
         <div className="participant-manager-container">
             <div className="participant-management-list-container" style={{ maxHeight: '400px', overflowY: 'auto', marginBottom: '20px', border: '1px solid var(--border-color)', padding: '10px', borderRadius: 'var(--border-radius)', backgroundColor: 'rgba(0,0,0,0.1)' }}>
-                <h5 style={{marginTop: 0, marginBottom: '10px', color: 'var(--text-color)', opacity: 0.8}}>Liste des Participants ({currentState.participantsList.length}) :</h5>
+                <h5 style={{marginTop: 0, marginBottom: '10px', color: 'var(--text-color)', opacity: 0.8}}>Participants ({currentState.participantsList.length})</h5>
                 <ul className="participant-management-list" style={{ listStyle: 'none', padding: 0 }}>
                     {currentState.participantsList.sort((a: string, b: string) => a.localeCompare(b)).map((p: string) => (
                         <li key={p} className={!currentState.participantStatus[p] ? 'inactive-participant' : ''} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.05)'}}>
@@ -131,7 +131,7 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
             </div>
             
             <div className="add-participant-form-container" style={{backgroundColor: 'var(--section-bg)', padding: '15px', borderRadius: 'var(--border-radius)', border: '1px solid var(--section-border-color)'}}>
-                <h5 style={{marginTop: 0, marginBottom: '10px', color: 'var(--text-color)'}}>Ajouter un Nouveau Participant</h5>
+                <h5 style={{marginTop: 0, marginBottom: '10px', color: 'var(--text-color)'}}>Nouveau participant</h5>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'flex-end' }}>
                     <div style={{flexGrow: 1}}>
                         <label htmlFor="new-participant-name" style={{display: 'block', fontSize: '0.8em', marginBottom: '4px'}}>Nom :</label>

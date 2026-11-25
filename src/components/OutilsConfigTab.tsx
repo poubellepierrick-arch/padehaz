@@ -6,6 +6,17 @@ import { DEFAULT_PROG_EMBED, MAX_PROG_EMBED_LENGTH } from '../config/constants';
 import { parseProgEmbedInput } from '../utils/progEmbed';
 import { useGlobal } from '../contexts/GlobalContext';
 
+function normalizeSafeHttpUrl(rawUrl: string): string | null {
+    const trimmed = (rawUrl || '').trim();
+    if (!trimmed) return null;
+    try {
+        const parsed = new URL(trimmed);
+        return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : null;
+    } catch {
+        return null;
+    }
+}
+
 export interface OutilsConfigTabProps {
     currentGroupName: string;
     allStates: any;
@@ -74,17 +85,17 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
 
     const handleSaveProgEmbed = () => {
         if (!canSaveProg) {
-            showMessage(parsedPreview.errorMessage || 'Lien ou code iframe invalide', 'error');
+            showMessage(parsedPreview.errorMessage || 'Lien invalide', 'error');
             return;
         }
         onUpdateGlobalProgEmbed(progInput.trim());
-        showMessage('Programme (iframe) enregistré pour tous les ateliers', 'success');
+        showMessage('Prog enregistré', 'success');
     };
 
     const handleOpenInProg = () => {
         if (hasProgChanged) {
             if (!canSaveProg) {
-                showMessage(parsedPreview.errorMessage || 'Lien ou code iframe invalide', 'error');
+                showMessage(parsedPreview.errorMessage || 'Lien invalide', 'error');
                 return;
             }
             onUpdateGlobalProgEmbed(progInput.trim());
@@ -95,7 +106,7 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
     const handleResetDefaultProg = () => {
         setProgInput(DEFAULT_PROG_EMBED);
         onUpdateGlobalProgEmbed(DEFAULT_PROG_EMBED);
-        showMessage('Lien Programme réinitialisé par défaut', 'info');
+        showMessage('Prog réinitialisé', 'info');
     };
 
     return (
@@ -112,20 +123,20 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
 
             {/* Connexion & Sauvegarde Firebase */}
             <div className="config-card">
-                <CollapsibleSection id="config-firebase-cloud" title="☁️ Connexion & Sauvegarde Firebase (Cloud)">
+                <CollapsibleSection id="config-firebase-cloud" title="☁️ Sauvegarde Cloud">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {firebaseUser ? (
                             <>
                                 <div style={{ fontSize: '0.92em', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div>
                                         <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>Connecté</span>{' '}
-                                        en tant que <strong>{firebaseUser.displayName || firebaseUser.email || 'Compte Google'}</strong>
+                                        · <strong>{firebaseUser.displayName || firebaseUser.email || 'Google'}</strong>
                                         {firebaseUser.displayName && firebaseUser.email ? ` (${firebaseUser.email})` : ''}
                                     </div>
                                     <span style={{ fontSize: '0.85em', opacity: 0.75 }}>
                                         {lastFirebaseBackup
                                             ? `Dernière synchro : ${new Date(lastFirebaseBackup).toLocaleString('fr-FR')}`
-                                            : 'Aucune sauvegarde Cloud enregistrée'}
+                                            : 'Aucune sauvegarde'}
                                     </span>
                                 </div>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -136,13 +147,13 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
                                         onClick={async () => {
                                             const res = await manualFirebaseBackup();
                                             if (res.success) {
-                                                showMessage('Sauvegarde Cloud effectuée', 'success');
+                                                showMessage('Sauvegarde effectuée', 'success');
                                             } else if (res.error) {
                                                 showMessage(res.error, 'error');
                                             }
                                         }}
                                     >
-                                        {isFirebaseBackingUp ? 'Sauvegarde...' : 'Sauvegarder maintenant'}
+                                        {isFirebaseBackingUp ? 'Sauvegarde...' : 'Sauvegarder'}
                                     </button>
                                     <button
                                         type="button"
@@ -150,32 +161,32 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
                                         onClick={async () => {
                                             const res = await loadFromFirebaseBackup();
                                             if (res.success) {
-                                                showMessage('Données chargées depuis Firebase', 'success');
+                                                showMessage('Données chargées', 'success');
                                             } else if (res.error) {
                                                 showMessage(res.error, 'error');
                                             }
                                         }}
                                         style={{ padding: '8px 14px', border: '1px solid var(--border-color)' }}
                                     >
-                                        Recharger depuis Firebase
+                                        Recharger
                                     </button>
                                     <button
                                         type="button"
                                         className="whitespace-nowrap shrink-0"
                                         onClick={async () => {
                                             await logout();
-                                            showMessage('Déconnecté de Firebase', 'info');
+                                            showMessage('Déconnecté', 'info');
                                         }}
                                         style={{ padding: '8px 14px', border: '1px solid var(--border-color)', marginLeft: 'auto' }}
                                     >
-                                        Se déconnecter
+                                        Déconnexion
                                     </button>
                                 </div>
                             </>
                         ) : (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <p style={{ margin: 0, fontSize: '0.9em', opacity: 0.85, flex: '1 1 260px' }}>
-                                    Connectez votre compte Google pour synchroniser automatiquement vos ateliers, participants et historiques avec Firebase.
+                                    Connectez un compte Google pour synchroniser vos ateliers.
                                 </p>
                                 <button
                                     type="button"
@@ -184,13 +195,13 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
                                     onClick={async () => {
                                         const res = await loginWithGoogle();
                                         if (res.success) {
-                                            showMessage(`Connecté à Firebase (${res.user?.email || res.user?.displayName || 'Google'})`, 'success');
+                                            showMessage(`Connecté (${res.user?.email || res.user?.displayName || 'Google'})`, 'success');
                                         } else if (res.error) {
                                             showMessage(res.error, 'error');
                                         }
                                     }}
                                 >
-                                    {isAuthenticating ? 'Connexion en cours...' : 'Se connecter avec Google (Firebase)'}
+                                    {isAuthenticating ? 'Connexion...' : 'Connexion Google'}
                                 </button>
                             </div>
                         )}
@@ -205,9 +216,9 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
 
             {/* Configuration globale de l'onglet Prog */}
             <div className="config-card">
-                <CollapsibleSection id="config-global-prog" title="Programme (Iframe Global)">
+                <CollapsibleSection id="config-global-prog" title="Prog (lien global)">
                     <p style={{ marginBottom: '10px', fontSize: '0.9em', opacity: 0.8 }}>
-                        Lien partagé entre tous les groupes d&apos;atelier et affiché en pleine page dans l&apos;onglet <strong>Prog</strong>. Collez une URL (https://...) ou un code HTML <code>&lt;iframe&gt;</code> complet.
+                        URL (https://...) ou balise <code>&lt;iframe&gt;</code> partagée entre tous les ateliers.
                     </p>
                     <textarea
                         id="global-prog-embed-input"
@@ -233,10 +244,10 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
                             <span style={{ color: 'var(--error-color)' }}>{parsedPreview.errorMessage}</span>
                         ) : parsedPreview.isValid ? (
                             <span style={{ opacity: 0.85, wordBreak: 'break-all' }}>
-                                URL détectée : <strong>{parsedPreview.srcUrl}</strong>
+                                URL : <strong>{parsedPreview.srcUrl}</strong>
                             </span>
                         ) : (
-                            <span style={{ opacity: 0.65 }}>Aucun lien saisi (l&apos;onglet Prog affichera un écran vide).</span>
+                            <span style={{ opacity: 0.65 }}>Aucun lien configuré.</span>
                         )}
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginTop: '12px' }}>
@@ -402,32 +413,44 @@ export const OutilsConfigTab: React.FC<OutilsConfigTabProps> = ({
             {/* Shortcuts */}
             <CollapsibleSection id="shortcuts-section" title="Raccourcis Web">
                 <ul id="shortcuts-list">
-                    {(currentState.shortcuts || []).map((sc: any, idx: number) => (
-                        <li key={idx}>
-                            <a href={sc.url} target="_blank" rel="noopener noreferrer">
-                                {sc.name}
-                            </a>
-                            <button
-                                className="delete-shortcut-btn"
-                                onClick={() => modifyState((s) => s.shortcuts.splice(idx, 1))}
-                            >
-                                &times;
-                            </button>
-                        </li>
-                    ))}
+                    {(currentState.shortcuts || []).map((sc: any, idx: number) => {
+                        const safeUrl = normalizeSafeHttpUrl(sc.url);
+                        return (
+                            <li key={idx}>
+                                {safeUrl ? (
+                                    <a href={safeUrl} target="_blank" rel="noopener noreferrer">
+                                        {sc.name}
+                                    </a>
+                                ) : (
+                                    <span className="opacity-70">{sc.name}</span>
+                                )}
+                                <button
+                                    className="delete-shortcut-btn"
+                                    onClick={() => modifyState((s) => s.shortcuts.splice(idx, 1))}
+                                >
+                                    &times;
+                                </button>
+                            </li>
+                        );
+                    })}
                 </ul>
                 <form
                     id="add-shortcut-form"
                     onSubmit={(e) => {
                         e.preventDefault();
-                        if (newShortcutName && newShortcutUrl) {
-                            modifyState((s) => {
-                                if (!s.shortcuts) s.shortcuts = [];
-                                s.shortcuts.push({ name: newShortcutName, url: newShortcutUrl });
-                            });
-                            setNewShortcutName('');
-                            setNewShortcutUrl('');
+                        const cleanName = newShortcutName.trim();
+                        const safeUrl = normalizeSafeHttpUrl(newShortcutUrl);
+                        if (!cleanName) return;
+                        if (!safeUrl) {
+                            showMessage('URL invalide (http:// ou https://)', 'error');
+                            return;
                         }
+                        modifyState((s) => {
+                            if (!s.shortcuts) s.shortcuts = [];
+                            s.shortcuts.push({ name: cleanName, url: safeUrl });
+                        });
+                        setNewShortcutName('');
+                        setNewShortcutUrl('');
                     }}
                 >
                     <input

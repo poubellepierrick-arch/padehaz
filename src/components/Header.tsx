@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
     const handleConnectFirebase = async () => {
         const res = await loginWithGoogle();
         if (res.success) {
-            showMessage(`Connecté à Firebase (${res.user?.email || res.user?.displayName || 'Google'})`, 'success');
+            showMessage(`Connecté (${res.user?.email || res.user?.displayName || 'Google'})`, 'success');
         } else if (res.error) {
             showMessage(res.error, 'error');
         }
@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
     const handleBackupCloud = async () => {
         const res = await manualFirebaseBackup();
         if (res.success) {
-            showMessage('Sauvegarde Cloud effectuée', 'success');
+            showMessage('Sauvegarde effectuée', 'success');
         } else if (res.error) {
             showMessage(res.error, 'error');
         }
@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
     const handleLoadCloud = async () => {
         const res = await loadFromFirebaseBackup();
         if (res.success) {
-            showMessage('Données chargées depuis Firebase', 'success');
+            showMessage('Données chargées', 'success');
         } else if (res.error) {
             showMessage(res.error, 'error');
         }
@@ -156,20 +156,20 @@ export const Header: React.FC<HeaderProps> = ({
                         id="firebase-connect-header-btn"
                         disabled={isAuthenticating}
                         onClick={handleConnectFirebase}
-                        title="Se connecter directement à Firebase avec votre compte Google"
+                        title="Connexion Google"
                         className="whitespace-nowrap shrink-0 h-7 px-2.5 text-xs font-semibold rounded border border-[var(--highlight-color)] bg-[var(--highlight-color)] text-white hover:opacity-90 transition-opacity flex items-center gap-1.5"
                     >
-                        {isAuthenticating ? 'Connexion...' : 'Connexion Firebase'}
+                        {isAuthenticating ? 'Connexion...' : 'Connexion'}
                     </button>
                 )}
 
                 <button
                     id="new-session-header-btn"
-                    title="Nouvelle Session"
+                    title="Nouvelle session"
                     onClick={async () => {
                         if (
                             await confirmAction(
-                                "Démarrer une nouvelle session d'atelier ?<br>Les compteurs de session seront réinitialisés.",
+                                "Démarrer une nouvelle session ?\nLes compteurs de session seront réinitialisés.",
                                 { isDanger: false }
                             )
                         ) {
@@ -218,17 +218,17 @@ export const Header: React.FC<HeaderProps> = ({
                                         await handleBackupCloud();
                                         setMenuOpen(false);
                                     }}>
-                                        ☁️ Sauvegarder dans le Cloud
+                                        ☁️ Sauvegarder
                                     </button>
                                     <button onClick={async () => {
                                         await handleLoadCloud();
                                         setMenuOpen(false);
                                     }}>
-                                        📥 Recharger depuis Firebase
+                                        📥 Recharger
                                     </button>
                                     <button onClick={async () => {
                                         await logout();
-                                        showMessage('Déconnecté de Firebase', 'info');
+                                        showMessage('Déconnecté', 'info');
                                         setMenuOpen(false);
                                     }}>
                                         🚪 Déconnexion ({firebaseUser.displayName || firebaseUser.email || 'Google'})
@@ -239,12 +239,12 @@ export const Header: React.FC<HeaderProps> = ({
                                     setMenuOpen(false);
                                     await handleConnectFirebase();
                                 }}>
-                                    🔑 Connexion Google (Firebase Cloud)
+                                    🔑 Connexion Google
                                 </button>
                             )}
                             <hr style={{ borderColor: 'var(--border-color)', margin: '4px 0' }} />
-                            <button onClick={saveStateToFile}>Télécharger (JSON)</button>
-                            <button onClick={() => fileInputRef.current?.click()}>Charger (JSON)</button>
+                            <button onClick={saveStateToFile}>Exporter (JSON)</button>
+                            <button onClick={() => fileInputRef.current?.click()}>Importer (JSON)</button>
                             <button
                                 onClick={() => {
                                     setIsStyleEditorOpen(true);
@@ -252,7 +252,7 @@ export const Header: React.FC<HeaderProps> = ({
                                     setMenuOpen(false);
                                 }}
                             >
-                                Personnaliser Style
+                                Apparence
                             </button>
                             <button
                                 onClick={() => {
@@ -263,14 +263,14 @@ export const Header: React.FC<HeaderProps> = ({
                                     setMenuOpen(false);
                                 }}
                             >
-                                Déverrouiller Tous
+                                Déverrouiller tout
                             </button>
                             <button
                                 onClick={async () => {
                                     const expected = `RESET ${currentGroupName}`;
                                     setPromptInputVal('');
                                     const confirmed = await confirmAction(
-                                        `ATTENTION : Réinitialiser TOUTES les données ?<br>Irréversible.`,
+                                        `Réinitialiser toutes les données de "${currentGroupName}" ?\nAction irréversible.`,
                                         { isDanger: true, prompt: { expected, placeholder: `Tapez '${expected}'` } }
                                     );
                                     if (confirmed) {
@@ -282,7 +282,7 @@ export const Header: React.FC<HeaderProps> = ({
                                     setMenuOpen(false);
                                 }}
                             >
-                                Réinitialiser TOUT (Attention !)
+                                Tout réinitialiser
                             </button>
                         </div>
                     )}

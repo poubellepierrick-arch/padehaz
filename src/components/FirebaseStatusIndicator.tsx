@@ -93,34 +93,33 @@ export const FirebaseStatusIndicator: React.FC<FirebaseStatusIndicatorProps> = (
     };
     
     const title = useMemo(() => {
-        const prefix = isAutoSync ? "Synchro auto" : "Sauvegarde manuelle";
-        
-        if (isAuthenticating) return `Connexion à Firebase en cours...`;
-        if (error) return `Erreur (${prefix}): ${error}`;
-        if (!isLoggedIn) return `Non connecté (${prefix}). Cliquez pour vous connecter à Firebase.`;
-        if (isBackingUp) return `Sauvegarde en cours...`;
-        
-        let status = "";
-        
+        const prefix = isAutoSync ? 'Synchro auto' : 'Sauvegarde';
+
+        if (isAuthenticating) return 'Connexion...';
+        if (error) return `Erreur (${prefix}) : ${error}`;
+        if (!isLoggedIn) return 'Hors ligne · Cliquer pour connecter';
+        if (isBackingUp) return 'Sauvegarde...';
+
+        let status = '';
+
         if (lastBackup) {
-            // Affichage explicite de l'heure exacte demandée
             const dateObj = new Date(lastBackup);
             const dateStr = dateObj.toLocaleDateString('fr-FR');
             const timeStr = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            status = `Dernière : ${dateStr} à ${timeStr}`;
+            status = `${dateStr} à ${timeStr}`;
         } else {
-            status = 'Jamais sauvegardé';
+            status = 'Aucune sauvegarde';
         }
 
         if (hasUnsavedChanges) {
-            status += "\n⚠️ Changements non sauvegardés";
-        }
-        
-        if (isOldest && !hasUnsavedChanges) {
-            status += "\n(Version la plus ancienne)";
+            status += '\nModifications locales';
         }
 
-        return `${prefix}\n${status}`;
+        if (isOldest && !hasUnsavedChanges) {
+            status += '\nVersion antérieure';
+        }
+
+        return `${prefix} · ${status}`;
     }, [error, lastBackup, isAutoSync, isLoggedIn, isBackingUp, isAuthenticating, hasUnsavedChanges, isOldest]);
     
     const content = (

@@ -6,7 +6,8 @@ export interface InlineConfirmBannerProps {
     title?: string;
     isDanger?: boolean;
     prompt?: {
-        expected: string;
+        expected?: string;
+        freeInput?: boolean;
         placeholder?: string;
     };
     promptInputVal: string;
@@ -47,7 +48,12 @@ export const InlineConfirmBanner: React.FC<InlineConfirmBannerProps> = ({
 
     if (!isOpen) return null;
 
-    const isPromptValid = !prompt || promptInputVal.trim() === prompt.expected;
+    const trimmedInput = promptInputVal.trim();
+    const isPromptValid = !prompt
+        ? true
+        : prompt.freeInput || !prompt.expected
+        ? trimmedInput.length > 0
+        : trimmedInput === prompt.expected;
 
     return (
         <div
@@ -67,10 +73,9 @@ export const InlineConfirmBanner: React.FC<InlineConfirmBannerProps> = ({
                         {title}
                     </strong>
                 )}
-                <div
-                    className="text-xs md:text-sm text-gray-200"
-                    dangerouslySetInnerHTML={{ __html: message }}
-                />
+                <div className="text-xs md:text-sm text-[var(--text-color)] whitespace-pre-line">
+                    {message}
+                </div>
 
                 {prompt && (
                     <div className="mt-2 flex items-center gap-2">
@@ -78,14 +83,14 @@ export const InlineConfirmBanner: React.FC<InlineConfirmBannerProps> = ({
                             ref={inputRef}
                             type="text"
                             value={promptInputVal}
-                            placeholder={prompt.placeholder || `Tapez '${prompt.expected}'`}
+                            placeholder={prompt.placeholder || (prompt.expected ? `Tapez '${prompt.expected}'` : '')}
                             onChange={(e) => setPromptInputVal(e.target.value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && isPromptValid) {
                                     onConfirm(promptInputVal);
                                 }
                             }}
-                            className="px-2 py-1 bg-[#3a3f4b] text-white border border-[#404552] rounded text-xs w-full max-w-xs focus:outline-none focus:border-[#61afef]"
+                            className="px-2 py-1 bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded text-xs w-full max-w-xs focus:outline-none focus:border-[var(--highlight-color)]"
                         />
                     </div>
                 )}
@@ -93,12 +98,14 @@ export const InlineConfirmBanner: React.FC<InlineConfirmBannerProps> = ({
 
             <div className="flex items-center gap-2 self-end md:self-center shrink-0">
                 <button
+                    type="button"
                     onClick={onCancel}
-                    className="px-3 py-1 bg-[#4b505c] hover:bg-[#5a606d] text-gray-200 rounded text-xs transition-colors"
+                    className="px-3 py-1 bg-[var(--button-bg)] hover:bg-[var(--button-hover-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded text-xs transition-colors"
                 >
-                    Annuler (Échap)
+                    Annuler
                 </button>
                 <button
+                    type="button"
                     disabled={!isPromptValid}
                     onClick={() => onConfirm(prompt ? promptInputVal : undefined)}
                     className="px-3 py-1 text-white rounded text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -106,7 +113,7 @@ export const InlineConfirmBanner: React.FC<InlineConfirmBannerProps> = ({
                         backgroundColor: isDanger ? 'var(--error-color)' : 'var(--success-color)'
                     }}
                 >
-                    Confirmer (Entrée)
+                    Confirmer
                 </button>
             </div>
         </div>

@@ -699,7 +699,7 @@ export const updateStateWithGroupProposals = (s: any) => {
 
     // Execute Algo Pipeline for Bonus
     // We pass 'lB' (locked Bonus)
-    let availableForBonus = available.filter((n: string) => !finalGroupMain.includes(n) && !finalGroupMain.includes(n) && !eB.includes(n));
+    let availableForBonus = available.filter((n: string) => !finalGroupMain.includes(n) && !eB.includes(n));
     let finalGroupBonus: string[] = [...lB];
     
     if (bonusSlots > 0 && availableForBonus.length > 0) {

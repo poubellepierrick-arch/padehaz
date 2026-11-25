@@ -38,6 +38,7 @@ export interface AtelierViewProps {
     uniqueMarkerCountRef: React.MutableRefObject<number>;
     setEditHistoryState: (state: any) => void;
     confirmAction: (message: string, options?: any) => Promise<any>;
+    globalProgSrcUrl?: string;
 }
 
 export const AtelierView: React.FC<AtelierViewProps> = ({
@@ -63,7 +64,8 @@ export const AtelierView: React.FC<AtelierViewProps> = ({
     sessionMarkerColorMap,
     uniqueMarkerCountRef,
     setEditHistoryState,
-    confirmAction
+    confirmAction,
+    globalProgSrcUrl
 }) => {
     const [dragOverArea, setDragOverArea] = useState<string | null>(null);
 
@@ -186,7 +188,7 @@ export const AtelierView: React.FC<AtelierViewProps> = ({
                     s.lockedParticipants[type].push(p);
                     s.lockedParticipants[otherType] = s.lockedParticipants[otherType].filter((x: string) => x !== p);
                 } else {
-                    showMessage(`Taille max atteinte pour ${type}`, 'error');
+                    showMessage(`Taille max atteinte (${type === 'main' ? 'Main' : 'Bonus'})`, 'error');
                 }
             } else if (isLocked && !isExcluded) {
                 s.lockedParticipants[type] = lockedList.filter((x: string) => x !== p);
@@ -251,19 +253,19 @@ export const AtelierView: React.FC<AtelierViewProps> = ({
 
     const templates = globalAlgoTemplates || [];
 
-    const progTargetUrl = (currentState.progUrl || '').trim() || (currentState.progEmbedCode?.match(/src=["'](.*?)["']/)?.[1] || '').trim();
+    const legacyProgUrl = (currentState.progUrl || '').trim() || (currentState.progEmbedCode?.match(/src=["'](.*?)["']/)?.[1] || '').trim();
+    const rawProgTargetUrl = globalProgSrcUrl !== undefined ? globalProgSrcUrl.trim() : legacyProgUrl;
 
-    const handleOpenProg = () => {
-        let url = progTargetUrl;
-        if (!url) {
-            showMessage('Lien Prog non défini', 'info');
-            return;
+    const safeProgUrl = (() => {
+        if (!rawProgTargetUrl) return '';
+        const normalized = /^https?:\/\//i.test(rawProgTargetUrl) ? rawProgTargetUrl : `https://${rawProgTargetUrl}`;
+        try {
+            const parsed = new URL(normalized);
+            return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : '';
+        } catch {
+            return '';
         }
-        if (!/^https?:\/\//i.test(url)) {
-            url = 'https://' + url;
-        }
-        window.open(url, '_blank', 'noopener,noreferrer');
-    };
+    })();
 
     return (
         <>
@@ -382,35 +384,61 @@ export const AtelierView: React.FC<AtelierViewProps> = ({
                 </div>
 
                 {/* Bouton Prog */}
-                <button
-                    id="atelier-prog-btn"
-                    type="button"
-                    onClick={handleOpenProg}
-                    title={progTargetUrl ? `Ouvrir : ${progTargetUrl}` : 'Lien Prog (configurer dans Outils & Config)'}
-                    style={{
-                        backgroundColor: 'var(--button-bg)',
-                        border: '1px solid var(--border-color)',
-                        color: 'var(--text-color)',
-                        borderRadius: '4px',
-                        padding: '2px 12px',
-                        minHeight: '26px',
-                        fontSize: '0.85em',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        whiteSpace: 'nowrap',
-                        flexShrink: 0
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'var(--button-hover-bg)';
-                        e.currentTarget.style.color = '#fff';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'var(--button-bg)';
-                        e.currentTarget.style.color = 'var(--text-color)';
-                    }}
-                >
-                    Prog
-                </button>
+                {safeProgUrl ? (
+                    <a
+                        id="atelier-prog-btn"
+                        href={safeProgUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`Ouvrir : ${safeProgUrl}`}
+                        className="no-underline inline-flex items-center justify-center"
+                        style={{
+                            backgroundColor: 'var(--button-bg)',
+                            border: '1px solid var(--border-color)',
+                            color: 'var(--text-color)',
+                            borderRadius: '4px',
+                            padding: '2px 12px',
+                            minHeight: '26px',
+                            fontSize: '0.85em',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--button-hover-bg)';
+                            e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--button-bg)';
+                            e.currentTarget.style.color = 'var(--text-color)';
+                        }}
+                    >
+                        Prog
+                    </a>
+                ) : (
+                    <button
+                        id="atelier-prog-btn"
+                        type="button"
+                        onClick={() => showMessage('Lien Prog non défini', 'info')}
+                        title="Lien Prog non configuré"
+                        style={{
+                            backgroundColor: 'var(--button-bg)',
+                            border: '1px solid var(--border-color)',
+                            color: 'var(--text-color)',
+                            borderRadius: '4px',
+                            padding: '2px 12px',
+                            minHeight: '26px',
+                            fontSize: '0.85em',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0
+                        }}
+                    >
+                        Prog
+                    </button>
+                )}
             </div>
 
             {/* GESTION & GÉNÉRATION DES GROUPES */}

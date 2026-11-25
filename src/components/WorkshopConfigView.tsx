@@ -74,7 +74,7 @@ export const WorkshopConfigView: React.FC<WorkshopConfigViewProps> = ({
             return;
         }
 
-        if (await confirmAction(`Voulez-vous vraiment supprimer l'atelier "<strong>${currentGroupName}</strong>" ?<br><br>⚠️ Cette action est irréversible et effacera tout l'historique de cet atelier.`, { isDanger: true })) {
+        if (await confirmAction(`Supprimer l'atelier "${currentGroupName}" ?\nCette action est irréversible.`, { isDanger: true })) {
             const newState = JSON.parse(JSON.stringify(allStates));
             delete newState[currentGroupName];
             
@@ -123,9 +123,9 @@ export const WorkshopConfigView: React.FC<WorkshopConfigViewProps> = ({
 
             {/* 2. SÉLECTION ET GESTION DES ATELIERS */}
             <div className="config-card">
-                <CollapsibleSection id="config-all-workshops" title={`📋 Tous les Ateliers (${Object.keys(allStates).length})`}>
+                <CollapsibleSection id="config-all-workshops" title={`📋 Ateliers (${Object.keys(allStates).length})`}>
                     <p style={{marginBottom: '10px', fontSize: '0.9em', opacity: 0.7}}>
-                        Sélectionnez un atelier actif ou gérez les ateliers existants.
+                        Sélectionnez l&apos;atelier actif.
                     </p>
                     <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {Object.keys(allStates).sort().map(g => {
@@ -204,9 +204,9 @@ export const WorkshopConfigView: React.FC<WorkshopConfigViewProps> = ({
 
             {/* 4. GESTION PARTICIPANTS */}
             <div className="config-card">
-                <CollapsibleSection id="config-participants" title="👥 Gestion des Participants">
+                <CollapsibleSection id="config-participants" title="👥 Participants">
                     <p style={{marginBottom: '15px', fontSize: '0.9em', opacity: 0.7}}>
-                        Ajoutez, supprimez ou masquez des participants pour cet atelier.
+                        Ajoutez, masquez ou supprimez des participants.
                     </p>
                     <ParticipantManager 
                         currentState={currentState}
@@ -223,14 +223,14 @@ export const WorkshopConfigView: React.FC<WorkshopConfigViewProps> = ({
             <div className="config-card danger-zone" style={{ border: '1px solid var(--error-color)', borderRadius: '8px', overflow: 'hidden' }}>
                 <div style={{ backgroundColor: 'rgba(224, 108, 117, 0.1)', padding: '10px 15px', borderBottom: '1px solid var(--error-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{ fontSize: '1.2em' }}>⚠️</span>
-                    <h3 style={{ margin: 0, fontSize: '1em', color: 'var(--error-color)' }}>Zone de Danger</h3>
+                    <h3 style={{ margin: 0, fontSize: '1em', color: 'var(--error-color)' }}>Suppression</h3>
                 </div>
                 <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                         <div>
                             <h4 style={{ margin: '0 0 5px 0', color: 'var(--text-color)' }}>Supprimer cet atelier</h4>
                             <p style={{ margin: 0, fontSize: '0.85em', opacity: 0.6 }}>
-                                Cette action supprimera définitivement "{currentGroupName}" et toutes ses données associées.
+                                Supprime &quot;{currentGroupName}&quot; et son historique.
                             </p>
                         </div>
                         <button 
@@ -243,7 +243,7 @@ export const WorkshopConfigView: React.FC<WorkshopConfigViewProps> = ({
                                 fontWeight: 'bold'
                             }}
                         >
-                            Supprimer l'atelier
+                            Supprimer
                         </button>
                     </div>
                 </div>

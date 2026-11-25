@@ -23,18 +23,17 @@ export const ProgView: React.FC<ProgViewProps> = React.memo(({ srcUrl, title = '
             ) : (
                 <div className="flex flex-col items-center justify-center flex-1 p-8 text-center gap-4">
                     <h3 className="text-lg font-semibold m-0">
-                        {errorMessage ? 'Lien Programme invalide' : 'Aucun lien Programme configuré'}
+                        {errorMessage ? 'Lien Prog invalide' : 'Aucun lien Prog'}
                     </h3>
                     <p className="text-sm opacity-80 max-w-md m-0">
-                        {errorMessage ||
-                            "Ajoutez une URL (https://...) ou un code d'intégration <iframe> dans Outils & Config pour l'afficher ici en pleine page."}
+                        {errorMessage || 'Ajoutez une URL ou un code iframe dans Outils & Config.'}
                     </p>
                     <button
                         type="button"
                         onClick={onOpenConfig}
                         className="save-btn whitespace-nowrap shrink-0"
                     >
-                        Configurer dans Outils & Config
+                        Configurer
                     </button>
                 </div>
             )}

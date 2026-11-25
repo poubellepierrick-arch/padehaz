@@ -331,6 +331,7 @@ export function App() {
                         uniqueMarkerCountRef={uniqueMarkerCountRef}
                         setEditHistoryState={setEditHistoryState}
                         confirmAction={confirmAction}
+                        globalProgSrcUrl={parsedProg.srcUrl}
                     />
                 )}
 

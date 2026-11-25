@@ -320,7 +320,7 @@ export const AlgoConfigView: React.FC<AlgoConfigViewProps> = ({
     };
 
     return (
-    <CollapsibleSection id="algo-config-section" title="Configuration de l'Algorithme">
+    <CollapsibleSection id="algo-config-section" title="Algorithme">
         
         {/* VIEW MODE TOGGLE */}
         <div style={{display:'flex', justifyContent:'center', marginBottom:'15px'}}>
@@ -358,7 +358,7 @@ export const AlgoConfigView: React.FC<AlgoConfigViewProps> = ({
 
         {/* --- FAVORITE TEMPLATES (QUICK BUTTONS) --- */}
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px', marginBottom:'5px', padding:'0 5px'}}>
-            <span style={{fontSize:'0.9em', opacity:0.7, fontWeight:'bold', textTransform:'uppercase'}}>Favoris (Accès Rapide)</span>
+            <span style={{fontSize:'0.9em', opacity:0.7, fontWeight:'bold', textTransform:'uppercase'}}>Favoris</span>
             <button 
                 onClick={() => setIsEditingFavorites(!isEditingFavorites)}
                 title={isEditingFavorites ? "Terminer l'édition" : "Modifier les favoris"}
@@ -426,7 +426,7 @@ export const AlgoConfigView: React.FC<AlgoConfigViewProps> = ({
         {/* TEMPLATE MANAGER SECTION */}
         <div style={{marginBottom: '20px', padding: '15px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '6px', border: '1px solid var(--border-color)'}}>
             <h4 style={{marginTop: 0, marginBottom: '10px', fontSize: '1em', color: 'var(--text-color)', opacity: 0.8, display:'flex', justifyContent:'space-between'}}>
-                <span>Autres Modèles & Gestion</span>
+                <span>Modèles</span>
             </h4>
             
             <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '15px'}}>
@@ -480,7 +480,7 @@ export const AlgoConfigView: React.FC<AlgoConfigViewProps> = ({
         </div>
         
         <div className="algo-target-size">
-            Objectif ({viewMode}) : Sélectionner <strong>{slotsToFill}</strong> / {targetSize} participant(s)
+            Objectif ({viewMode === 'main' ? 'Main' : 'Bonus'}) : <strong>{slotsToFill}</strong> / {targetSize}
         </div>
 
         <div className="algo-toolbar">
@@ -545,10 +545,10 @@ export const AlgoConfigView: React.FC<AlgoConfigViewProps> = ({
 
         <div style={{marginTop: '30px', paddingTop: '20px', borderTop: '2px solid var(--border-color)'}}>
             <h4 style={{textAlign: 'center', marginBottom: '10px', fontSize: '1.2em'}}>
-                Algorithme de Départage <span style={{fontSize: '0.8em', opacity: 0.7}}>(pour 'Min. Garanti')</span>
+                Départage <span style={{fontSize: '0.8em', opacity: 0.7}}>(Min. garanti)</span>
             </h4>
             <p style={{fontSize: '0.9em', opacity: 0.8, marginBottom: '15px', textAlign: 'center'}}>
-                Ce pipeline est utilisé uniquement pour départager les égalités lors de l'application d'un quota "Minimum Garanti".
+                Utilisé en cas d'égalité sur un quota minimum.
             </p>
             <div className="algo-toolbar">
                  <button onClick={() => modifyState((s:any) => {

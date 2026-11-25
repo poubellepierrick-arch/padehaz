@@ -27,8 +27,8 @@ export const StatsCharts: React.FC<StatsChartsProps> = ({ currentState, activePa
         const pStats = currentState.stats.participations[name] || createEmptyParticipantStats();
         return {
             name,
-            'Temps Main (min)': Math.round((pStats.totalMain || 0) / 60),
-            'Temps Bonus (min)': Math.round((pStats.totalBonus || 0) / 60),
+            'Temps Main (min)': Math.round((pStats.totalMainImproSeconds || 0) / 60),
+            'Temps Bonus (min)': Math.round((pStats.totalBonusImproSeconds || 0) / 60),
         };
     }).sort((a, b) => (b['Temps Main (min)'] + b['Temps Bonus (min)']) - (a['Temps Main (min)'] + a['Temps Bonus (min)']));
 

@@ -37,6 +37,11 @@
           "type": "string",
           "maxLength": 64,
           "description": "Horodatage de dernière modification"
+        },
+        "dataJson": {
+          "type": "string",
+          "maxLength": 900000,
+          "description": "Données sérialisées héritées"
         }
       },
       "required": ["ownerId", "updatedAt"]

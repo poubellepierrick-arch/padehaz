@@ -10,7 +10,7 @@ interface StatsViewProps {
     currentState: any;
     activeParticipants: string[];
     sortConfigs: any;
-    handleSort: (key: string, table: string) => void;
+    handleSort: (tableKey: string, key: string) => void;
     getParticipantColor: (name: string) => string;
     modifyState: (updater: (state: any) => void) => void;
     confirmAction: (message: string, options?: any) => Promise<any>;
@@ -40,8 +40,8 @@ export const StatsView: React.FC<StatsViewProps> = ({
         const typeLabel = type === 'warmup' ? 'de chauffe' : 'de plateau';
         const displayDate = new Date(date + 'T00:00:00Z').toLocaleDateString('fr-FR');
         
-        const newValueStr = await confirmAction(`Modifier total ${typeLabel} pour ${displayDate} (HH:MM:SS) ?`, {
-            prompt: { expected: '', placeholder: '00:00:00' }
+        const newValueStr = await confirmAction(`Modifier total ${typeLabel} du ${displayDate} (HH:MM:SS)`, {
+            prompt: { freeInput: true, placeholder: '00:00:00' }
         });
 
         if (newValueStr && typeof newValueStr === 'string') {
@@ -97,11 +97,11 @@ export const StatsView: React.FC<StatsViewProps> = ({
                 <table id="global-log-table">
                     <thead>
                         <tr>
-                            <th className="sortable" onClick={() => handleSort('date', 'global')}>Date {config.key === 'date' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
-                            <th className="sortable" onClick={() => handleSort('warmup', 'global')}>Total Chauffe 🔥 {config.key === 'warmup' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
-                            <th className="sortable" onClick={() => handleSort('plateau', 'global')}>Total Plateau 🟫 {config.key === 'plateau' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
-                            <th className="sortable" onClick={() => handleSort('impro', 'global')}>Total Impro 🎭 {config.key === 'impro' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
-                            <th className="sortable" onClick={() => handleSort('debrief', 'global')}>Total Debrief 💬 {config.key === 'debrief' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
+                            <th className="sortable" onClick={() => handleSort('global', 'date')}>Date {config.key === 'date' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
+                            <th className="sortable" onClick={() => handleSort('global', 'warmup')}>Total Chauffe 🔥 {config.key === 'warmup' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
+                            <th className="sortable" onClick={() => handleSort('global', 'plateau')}>Total Plateau 🟫 {config.key === 'plateau' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
+                            <th className="sortable" onClick={() => handleSort('global', 'impro')}>Total Impro 🎭 {config.key === 'impro' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
+                            <th className="sortable" onClick={() => handleSort('global', 'debrief')}>Total Debrief 💬 {config.key === 'debrief' && <span className="sort-indicator">{config.order === 'asc' ? '▲' : '▼'}</span>}</th>
                             <th>Suppr.</th>
                         </tr>
                     </thead>
@@ -115,7 +115,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                                 <td style={{fontFamily:'monospace'}}>{formatDuration(row.debrief)}</td>
                                 <td>
                                     <button className="delete-session-btn" onClick={async () => {
-                                        if (await confirmAction(`Supprimer stats du ${new Date(row.date).toLocaleDateString()} ?`, {isDanger:true})) {
+                                        if (await confirmAction(`Supprimer les stats du ${new Date(row.date).toLocaleDateString('fr-FR')} ?`, {isDanger:true})) {
                                             modifyState(s => {
                                                 const k = row.date;
                                                 const getDateKey = (ts: number) => new Date(ts).toLocaleDateString('fr-CA');
@@ -177,7 +177,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['participation'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'participation')}
+                        onSort={(key) => handleSort('participation', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
@@ -187,7 +187,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['duration-session'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'duration-session')}
+                        onSort={(key) => handleSort('duration-session', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
@@ -197,7 +197,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['duration-total'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'duration-total')}
+                        onSort={(key) => handleSort('duration-total', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
@@ -208,7 +208,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['cooc-main'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'cooc-main')}
+                        onSort={(key) => handleSort('cooc-main', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
@@ -219,7 +219,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['cooc-bonus'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'cooc-bonus')}
+                        onSort={(key) => handleSort('cooc-bonus', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
@@ -230,7 +230,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['cooc-session-main'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'cooc-session-main')}
+                        onSort={(key) => handleSort('cooc-session-main', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
@@ -241,7 +241,7 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         activeParticipants={activeParticipants}
                         stats={currentState.stats}
                         sortConfig={sortConfigs['cooc-session-bonus'] || { key: '', order: 'none' }}
-                        onSort={(key) => handleSort(key, 'cooc-session-bonus')}
+                        onSort={(key) => handleSort('cooc-session-bonus', key)}
                         getParticipantColor={getParticipantColor}
                     />
                 )}
